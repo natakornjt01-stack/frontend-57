@@ -50,9 +50,9 @@ export default function Footersection() {
           <div>
             <h3 className="text-white text-lg font-semibold mb-4">ติดต่อเรา</h3>
             <ul className="space-y-2 text-sm">
-              <li>📍 9 ถ.เวียงแก้ว ต.ศรีภูมิ อ.เมืองเชียงใหม่ จ.เชียงใหม่ 50200</li>
-              <li>📞 02-123-4567 (จ.-ศ. 09:00 - 18:00)</li>
-              <li>✉️ support@nextshop.com</li>
+              <li>📍 natakorn</li>
+              <li>📞 natakorn</li>
+              <li>✉️ natakorn@nextshop.com</li>
             </ul>
            
             {/* ปุ่ม Social Media แบบจำลอง (ใส่ลิงก์จริงที่ href) */}

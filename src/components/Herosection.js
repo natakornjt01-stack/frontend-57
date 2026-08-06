@@ -17,7 +17,7 @@ export default function HeroSection() {
             <h1 className="mt-6 text-5xl font-extrabold leading-tight text-white md:text-7xl">
               เติมเกม
               <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">
-                เร็ว ปลอดภัยคุ้มค่า
+                เร็ว ปลอดภัย คุ้มค่า
               </span>
             </h1>
 

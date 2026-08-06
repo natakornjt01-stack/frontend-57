@@ -1,97 +1,105 @@
-import Image from 'next/image';
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Cardsection() {
+  const games = [
+    {
+      id: 1,
+      name: "Free Fire",
+      category: "Mobile Battle Royale",
+      discount: "ลดสูงสุด 20%",
+      image: "https://official.garena.com/intl/v1/config/banner_ff_mb.jpg",
+      tag: "ขายดี",
+    },
+    {
+      id: 2,
+      name: "ROV : Arena of Valor",
+      category: "Mobile MOBA",
+      discount: "โบนัส คูปอง +15%",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJkby-FmbCKReXEQoGVwiSCbCUu5HOfinrwCBG8TSdYnfkofGoOquumvE&s=10",
+      tag: "แนะนำ",
+    },
+    {
+      id: 3,
+      name: "Valorant",
+      category: "PC FPS",
+      discount: "VP ราคาพิเศษ",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR42QFjtRRgkL2vy0hU7pWF6j2maCfaYnXQNEUZGrhjaH52exsvyCJvoDVB&s=10",
+      tag: "ฮิตแรง",
+    },
+  ];
+
   return (
-    <section className="py-12 bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-       
-        {/* หัวข้อ Section */}
-        <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900">สินค้าแนะนำ</h2>
-          <p className="mt-2 text-gray-600">เลือกชมสินค้าที่น่าสนใจของเราในเดือนนี้</p>
+    <section className="relative overflow-hidden bg-[#050816] py-16">
+      {/* Background Ambient Glows */}
+      <div className="absolute top-1/2 left-0 h-96 w-96 -translate-y-1/2 rounded-full bg-cyan-500/10 blur-[140px]" />
+      <div className="absolute top-1/2 right-0 h-96 w-96 -translate-y-1/2 rounded-full bg-purple-500/10 blur-[140px]" />
+
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="mb-12 text-center">
+          <span className="inline-block rounded-full border border-cyan-400/50 bg-cyan-500/10 px-4 py-1.5 text-xs font-semibold text-cyan-300 backdrop-blur">
+            🔥 GAME SELECTION
+          </span>
+          <h2 className="mt-4 text-3xl font-extrabold text-white md:text-5xl">
+            เกมยอดนิยม
+            <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">
+              {" "}เติมทันที รับโปรสุดคุ้ม
+            </span>
+          </h2>
+          <p className="mt-3 text-slate-400">
+            เลือกเกมที่คุณต้องการเติม ระบบอัตโนมัติ รวดเร็ว 24 ชั่วโมง
+          </p>
         </div>
 
-        {/* ตะแกรง Grid แบบ 3 คอลัมน์ */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         
-          {/* ==================== การ์ดใบที่ 1 ==================== */}
-          <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
-            <div className="relative w-full h-48 bg-gray-100">
-              <Image
-                src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80"
-                alt="หูฟังไร้สาย Noise Cancelling"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">
-                หูฟังไร้สาย Noise Cancelling
-              </h3>
-              <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                ตัดเสียงรบกวนได้ดีเยี่ยม แบตเตอรี่ใช้งานได้ยาวนาน 30 ชั่วโมง
-              </p>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-xl font-bold text-blue-600">฿4,990</span>
-                <button className="px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors">
-                  เพิ่มลงตะกร้า
-                </button>
+        {/* Game Cards Grid */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          {games.map((game) => (
+            <div
+              key={game.id}
+              className="group relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-slate-900/60 p-4 backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:border-cyan-400/60 hover:shadow-[0_0_30px_rgba(34,211,238,0.25)]"
+            >
+              {/* Badge */}
+              <div className="absolute top-6 left-6 z-10 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-3 py-1 text-xs font-bold text-white shadow-md">
+                {game.tag}
+              </div>
+
+              {/* Card Image Wrapper */}
+              <div className="relative h-52 w-full overflow-hidden rounded-xl bg-slate-800">
+                <Image
+                  src={game.image}
+                  alt={game.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
+              </div>
+
+              {/* Card Content */}
+              <div className="mt-4 flex flex-col justify-between">
+                <div>
+                  <span className="text-xs font-medium text-cyan-400">
+                    {game.category}
+                  </span>
+                  <h3 className="mt-1 text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+                    {game.name}
+                  </h3>
+                  <p className="mt-1 text-sm font-semibold text-purple-400">
+                    {game.discount}
+                  </p>
+                </div>
+
+                <div className="mt-6">
+                  <Link
+                    href={`/topup/${game.id}`}
+                    className="block w-full rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 py-2.5 text-center text-sm font-semibold text-white shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] hover:brightness-110"
+                  >
+                    เติมเกมนี้
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* ==================== การ์ดใบที่ 2 ==================== */}
-          <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
-            <div className="relative w-full h-48 bg-gray-100">
-              <Image
-                src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&q=80"
-                alt="กล้อง Mirrorless 4K"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">
-                กล้อง Mirrorless 4K
-              </h3>
-              <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                กล้องดิจิตอลความละเอียดสูง พร้อมเลนส์คิท 15-45mm
-              </p>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-xl font-bold text-blue-600">฿25,900</span>
-                <button className="px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors">
-                  เพิ่มลงตะกร้า
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* ==================== การ์ดใบที่ 3 ==================== */}
-          <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
-            <div className="relative w-full h-48 bg-gray-100">
-              <Image
-                src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"
-                alt="นาฬิกาสมาร์ทวอทช์"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">
-                นาฬิกาสมาร์ทวอทช์
-              </h3>
-              <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                ติดตามการออกกำลังกาย วัดอัตราการเต้นของหัวใจ กันน้ำได้
-              </p>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-xl font-bold text-blue-600">฿3,200</span>
-                <button className="px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors">
-                  เพิ่มลงตะกร้า
-                </button>
-              </div>
-            </div>
-          </div>
-
+          ))}
         </div>
       </div>
     </section>
