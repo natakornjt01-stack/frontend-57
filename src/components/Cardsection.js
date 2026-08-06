@@ -13,7 +13,7 @@ export default function Cardsection() {
     },
     {
       id: 2,
-      name: "ROV : Arena of Valor",
+      name: "ROV : Aena of Valor",
       category: "Mobile MOBA",
       discount: "โบนัส คูปอง +15%",
       image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJkby-FmbCKReXEQoGVwiSCbCUu5HOfinrwCBG8TSdYnfkofGoOquumvE&s=10",
