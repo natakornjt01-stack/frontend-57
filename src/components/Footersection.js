@@ -1,6 +1,3 @@
-// ไฟล์: components/Footer.jsx
-// หรือถ้านำไปวางในไฟล์เดิม ก็ใช้ export default function Footer() { ... } ได้เลย
-
 export default function Footersection() {
   return (
     <footer className="bg-gray-900 text-gray-300 py-12">

@@ -1,187 +1,338 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Swal from "sweetalert2";
 
 export default function LoginModal({ isOpen, onClose }) {
   // 1. State ควบคุมโหมด (True = Login, False = Register)
-  const [isLoginMode, setIsLoginMode] = useState(true)
+  const [isLoginMode, setIsLoginMode] = useState(true);
+
+  // State สำหรับควบคุม Animation แสงวูบวาบเมื่อเปลี่ยนโหมด
+  const [isGlowing, setIsGlowing] = useState(false);
 
   // 2. State สำหรับเก็บข้อมูลฟอร์ม
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [form, setForm] = useState({
+    firstname: "",
+    lastname: "",
+    username: "",
+    password: "",
+  });
 
-  // 3. รีเซ็ตฟอร์มกลับเป็นหน้า Login เสมอ เมื่อเปิด Modal ขึ้นมาใหม่
+  // 3. รีเซ็ตฟอร์มกลับเป็นค่าเริ่มต้นเมื่อเปิด Modal ขึ้นมาใหม่
   useEffect(() => {
     if (isOpen) {
-      setIsLoginMode(true)
-      setFirstName('')
-      setLastName('')
-      setEmail('')
-      setPassword('')
+      setIsLoginMode(true);
+      setForm({
+        firstname: "",
+        lastname: "",
+        username: "",
+        password: "",
+      });
     }
-  }, [isOpen])
+  }, [isOpen]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
-  // 4. ฟังก์ชันจัดการเมื่อกดปุ่ม Submit
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  // ฟังก์ชันสลับโหมด พร้อมส่งสัญญาณแสงวูบวาบ (Flash Effect)
+  const handleToggleMode = () => {
+    setIsGlowing(true);
+    setIsLoginMode(!isLoginMode);
+    setTimeout(() => setIsGlowing(false), 600);
+  };
+
+  // ฟังก์ชันอัปเดต State ตามชื่อ name ของ Input
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // 4. ฟังก์ชันจัดการเมื่อกด Submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     if (isLoginMode) {
-      console.log('เข้าสู่ระบบด้วย:', { email, password })
-      // Logic เข้าสู่ระบบ
+      console.log("เข้าสู่ระบบด้วย:", {
+        username: form.username,
+        password: form.password,
+      });
+
+      await Swal.fire({
+        icon: "success",
+        title: "เข้าสู่ระบบสำเร็จ",
+        text: `ยินดีต้อนรับกลับมาคุณ ${form.username}`,
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#06b6d4",
+        background: "#0f172a",
+        color: "#fff",
+      });
+      onClose();
     } else {
-      console.log('สมัครสมาชิกด้วย:', { firstName, lastName, email, password })
-      // Logic สมัครสมาชิก
+      try {
+        const response = await fetch("https://api.itdev.cmtc.ac.th/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstname: form.firstname,
+            lastname: form.lastname,
+            username: form.username,
+            password: form.password,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          await Swal.fire({
+            icon: "success",
+            title: `สมัครสมาชิกสำเร็จ`,
+            text: "เพิ่มข้อมูลผู้ใช้เรียบร้อยแล้ว กรุณาเข้าสู่ระบบ",
+            confirmButtonText: "ตกลง",
+            confirmButtonColor: "#06b6d4",
+            background: "#0f172a",
+            color: "#fff",
+          });
+
+          setIsLoginMode(true);
+          setForm({ firstname: "", lastname: "", username: "", password: "" });
+        } else if (response.status === 400) {
+          await Swal.fire({
+            icon: "warning",
+            title: `ข้อมูลไม่ถูกต้อง`,
+            text: result.message || "เกิดข้อผิดพลาด",
+            confirmButtonText: "ตกลง",
+            confirmButtonColor: "#eab308",
+            background: "#0f172a",
+            color: "#fff",
+          });
+        } else if (response.status >= 500) {
+          await Swal.fire({
+            icon: "error",
+            title: `เกิดข้อผิดพลาดที่เซิร์ฟเวอร์`,
+            text: result.message || "เกิดข้อผิดพลาด",
+            confirmButtonText: "ตกลง",
+            confirmButtonColor: "#ef4444",
+            background: "#0f172a",
+            color: "#fff",
+          });
+        }
+      } catch (error) {
+        await Swal.fire({
+          icon: "warning",
+          title: "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้",
+          text: "กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองใหม่อีกครั้ง",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#ec4899",
+          background: "#0f172a",
+          color: "#fff",
+        });
+      }
     }
-  }
+  };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4">
-     
-      {/* กล่อง Modal */}
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 transform transition-all animate-in fade-in zoom-in-95 duration-200">
-       
-        {/* ปุ่มปิด Modal */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+      {/* Container หลักที่มีขอบไฟ LED วิ่งวน */}
+      <div
+        className={`relative w-full max-w-md overflow-hidden rounded-3xl p-[2px] transition-all duration-500 ${
+          isGlowing ? "scale-105" : "scale-100"
+        }`}
+      >
+        {/* ================= 1. ไฟ LED วิ่งรอบกรอบ (Rotating Gradient Border) ================= */}
+        <div
+          className={`absolute -inset-[200%] animate-[spin_4s_linear_infinite] opacity-90 transition-all duration-500 ${
+            isLoginMode
+              ? "bg-[conic-gradient(from_0deg,#06b6d4,#3b82f6,#a855f7,#06b6d4)]"
+              : "bg-[conic-gradient(from_0deg,#10b981,#06b6d4,#ec4899,#10b981)]"
+          }`}
+        />
 
-        {/* ส่วนหัว (Header & Logo) เปลี่ยนข้อความตามโหมด */}
-        <div className="text-center mb-8 mt-2">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-xl shadow-lg shadow-indigo-500/30 mb-4">
-            M
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            {isLoginMode ? 'ยินดีต้อนรับกลับมา' : 'สร้างบัญชีใหม่'}
-          </h2>
-          <p className="mt-2 text-sm text-gray-500">
-            {isLoginMode
-              ? 'กรุณากรอกข้อมูลเพื่อเข้าสู่ระบบบัญชีของคุณ'
-              : 'เข้าร่วมเป็นส่วนหนึ่งกับเรา เพื่อรับสิทธิพิเศษมากมาย'}
-          </p>
-        </div>
+        {/* แสงฟุ้งด้านหลังกล่องเมื่อสลับโหมด */}
+        <div
+          className={`absolute inset-0 blur-2xl transition-opacity duration-500 ${
+            isGlowing ? "opacity-100" : "opacity-30"
+          } ${isLoginMode ? "bg-cyan-500" : "bg-purple-500"}`}
+        />
 
-        {/* ฟอร์ม */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-         
-          {/* ================= ส่วนที่เพิ่มมาเฉพาะหน้า Register ================= */}
-          {!isLoginMode && (
-            <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  ชื่อ
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
-                  placeholder="ชื่อจริง"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  นามสกุล
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
-                  placeholder="นามสกุล"
-                />
-              </div>
-            </div>
-          )}
-          {/* ================================================================= */}
-
-          {/* อีเมล (ใช้ร่วมกันทั้ง Login และ Register) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              อีเมล
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
-              placeholder="name@example.com"
-            />
-          </div>
-
-          {/* รหัสผ่าน (ใช้ร่วมกันทั้ง Login และ Register) */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-gray-700">
-                รหัสผ่าน
-              </label>
-              {isLoginMode && (
-                <Link
-                  href="/forgot-password"
-                  className="text-xs font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
-                  onClick={onClose}
-                >
-                  ลืมรหัสผ่าน?
-                </Link>
-              )}
-            </div>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {/* ปุ่ม Submit เปลี่ยนข้อความตามโหมด */}
+        {/* ================= 2. ตัวกล่อง Modal ด้านใน (Dark Glassmorphism) ================= */}
+        <div className="relative w-full rounded-[23px] bg-slate-900/90 p-8 backdrop-blur-xl border border-slate-800 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+          {/* ปุ่มปิด Modal */}
           <button
-            type="submit"
-            className="w-full flex justify-center py-3.5 px-4 mt-2 border border-transparent rounded-xl shadow-md text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all hover:-translate-y-0.5 active:translate-y-0"
+            onClick={onClose}
+            className="absolute top-5 right-5 p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-full transition-all border border-transparent hover:border-slate-700"
           >
-            {isLoginMode ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก'}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
-        </form>
 
-        {/* ตัวคั่น (Divider) */}
-        <div className="mt-6 mb-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
+          {/* ส่วนหัว (Header & Neon Logo) */}
+          <div className="text-center mb-8 mt-2">
+            <div
+              className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-white font-black text-2xl shadow-lg transition-all duration-500 ${
+                isLoginMode
+                  ? "bg-gradient-to-tr from-cyan-500 via-blue-600 to-purple-600 shadow-[0_0_25px_rgba(34,211,238,0.5)]"
+                  : "bg-gradient-to-tr from-emerald-500 via-teal-600 to-cyan-500 shadow-[0_0_25px_rgba(16,185,129,0.5)]"
+              }`}
+            >
+              G
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">หรือ</span>
+            <h2 className="text-2xl font-extrabold tracking-tight text-white mt-4">
+              {isLoginMode ? "ยินดีต้อนรับกลับมา" : "สร้างบัญชีใหม่"}
+            </h2>
+            <p className="mt-2 text-xs text-slate-400">
+              {isLoginMode
+                ? "เข้าสู่ระบบเพื่อรับสิทธิพิเศษและบริการเติมเกมอัตโนมัติ"
+                : "กรอกข้อมูลเพื่อสมัครสมาชิกและรับโบนัสพิเศษฟรี"}
+            </p>
+          </div>
+
+          {/* ฟอร์ม */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* ช่องกรอก ชื่อ-นามสกุล (แสดงเฉพาะโหมด Register) */}
+            {!isLoginMode && (
+              <div className="grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-3 duration-300">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    ชื่อจริง
+                  </label>
+                  <input
+                    type="text"
+                    name="firstname"
+                    required
+                    value={form.firstname}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-950/80 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all text-sm"
+                    placeholder="ระบุชื่อจริง"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    นามสกุล
+                  </label>
+                  <input
+                    type="text"
+                    name="lastname"
+                    required
+                    value={form.lastname}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-950/80 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all text-sm"
+                    placeholder="ระบูนามสกุล"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* ช่อง Username */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                ชื่อผู้ใช้งาน (Username)
+              </label>
+              <input
+                type="text"
+                name="username"
+                required
+                value={form.username}
+                onChange={handleChange}
+                className={`w-full px-4 py-2.5 rounded-xl border bg-slate-950/80 text-white placeholder-slate-500 focus:outline-none focus:ring-1 transition-all text-sm ${
+                  isLoginMode
+                    ? "border-slate-700 focus:border-cyan-400 focus:ring-cyan-400"
+                    : "border-slate-700 focus:border-emerald-400 focus:ring-emerald-400"
+                }`}
+                placeholder="กรอกชื่อผู้ใช้งาน"
+              />
+            </div>
+
+            {/* ช่อง Password */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-slate-300">
+                  รหัสผ่าน
+                </label>
+                {isLoginMode && (
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+                    onClick={onClose}
+                  >
+                    ลืมรหัสผ่าน?
+                  </Link>
+                )}
+              </div>
+              <input
+                type="password"
+                name="password"
+                required
+                value={form.password}
+                onChange={handleChange}
+                className={`w-full px-4 py-2.5 rounded-xl border bg-slate-950/80 text-white placeholder-slate-500 focus:outline-none focus:ring-1 transition-all text-sm ${
+                  isLoginMode
+                    ? "border-slate-700 focus:border-cyan-400 focus:ring-cyan-400"
+                    : "border-slate-700 focus:border-emerald-400 focus:ring-emerald-400"
+                }`}
+                placeholder="••••••••"
+              />
+            </div>
+
+            {/* ปุ่ม Submit นีออน */}
+            <button
+              type="submit"
+              className={`w-full py-3.5 px-4 mt-4 rounded-xl text-sm font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
+                isLoginMode
+                  ? "bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 shadow-[0_0_25px_rgba(34,211,238,0.4)] hover:shadow-[0_0_35px_rgba(34,211,238,0.6)]"
+                  : "bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-500 shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:shadow-[0_0_35px_rgba(16,185,129,0.6)]"
+              }`}
+            >
+              {isLoginMode ? "เข้าสู่ระบบทันที" : "ยืนยันการสมัครสมาชิก"}
+            </button>
+          </form>
+
+          {/* ตัวคั่น (Divider) */}
+          <div className="mt-6 mb-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-800" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-3 bg-slate-900 text-slate-500 font-medium">
+                  หรือ
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* ส่วนปุ่มสลับโหมด (Toggle) */}
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            {isLoginMode ? 'ยังไม่มีบัญชีใช่ไหม? ' : 'มีบัญชีอยู่แล้วใช่ไหม? '}
-            <button
-              type="button"
-              onClick={() => setIsLoginMode(!isLoginMode)}
-              className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors relative after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-0 after:bg-indigo-600 after:transition-all hover:after:w-full"
-            >
-              {isLoginMode ? 'สมัครสมาชิกเลย' : 'เข้าสู่ระบบ'}
-            </button>
-          </p>
+          {/* ปุ่มสลับโหมด */}
+          <div className="text-center">
+            <p className="text-xs text-slate-400">
+              {isLoginMode
+                ? "ยังไม่มีบัญชีสมาชิก? "
+                : "มีบัญชีสมาชิกอยู่แล้ว? "}
+              <button
+                type="button"
+                onClick={handleToggleMode}
+                className="font-bold text-cyan-400 hover:text-cyan-300 transition-colors ml-1 underline underline-offset-4 hover:decoration-cyan-300"
+              >
+                {isLoginMode ? "สมัครสมาชิกที่นี่" : "เข้าสู่ระบบที่นี่"}
+              </button>
+            </p>
+          </div>
         </div>
-       
       </div>
     </div>
-  )
+  );
 }

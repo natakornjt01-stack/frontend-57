@@ -7,11 +7,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'encrypted-tbn0.gstatic.com', // 👈 อนุญาตโดเมนของ Google
+        hostname: 'encrypted-tbn0.gstatic.com', //
       },
       {
         protocol: 'https',
-        hostname: '**',       // 👈 อนุญาต Unsplash (สำหรับรูปการ์ดใบที่ 1 และ 3)
+        hostname: '**',       // 
       },
     ],
   },

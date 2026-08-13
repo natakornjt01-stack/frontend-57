@@ -1,6 +1,7 @@
-"use client"; // 👈 ต้องอยู่บรรทัดแรกสุด ห้ามมีอะไรอยู่ข้างบน
+"use client"; 
 
 import Link from "next/link";
+
 
 export default function ContactSection() {
   const contactMethods = [

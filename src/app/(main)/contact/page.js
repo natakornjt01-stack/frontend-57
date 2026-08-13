@@ -1,4 +1,4 @@
-"use client"; // 👈 ใส่บรรทัดแรกสุดของหน้า Page ด้วยเช่นกัน
+"use client"; 
 
 import ContactSection from "@/components/ContactSection";
 
