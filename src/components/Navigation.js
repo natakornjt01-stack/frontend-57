@@ -49,14 +49,20 @@ export default function Navigation() {
               href="/"
               className="flex items-center gap-3 group"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-lg shadow-lg shadow-indigo-500/30 transition-transform group-hover:scale-105">
-                M
-              </div>
+            
+<div className="group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl p-[2px] transition-transform duration-300 hover:scale-110">
+  <div className="absolute -inset-[150%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,#06b6d4,#8b5cf6,#ec4899,#06b6d4)] opacity-90" />
+  <div className="relative flex h-full w-full items-center justify-center rounded-[14px] bg-slate-950/90 backdrop-blur-md shadow-[0_0_20px_rgba(139,92,246,0.3)] group-hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all duration-300">
+    <span className="animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] font-black text-lg text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.8)]">
+      ZZZ
+    </span>
+  </div>
+</div>
 
               <div className="flex flex-col">
                 {/* 🛠️ เปลี่ยนสีข้อความโลโก้ตาม isScrolled */}
                 <h1 className={`text-xl font-extrabold tracking-tight transition-colors duration-300 ${textColor}`}>
-                  เติมเกม
+                  BangBoo Shop
                 </h1>
                 <p className={`text-[11px] font-medium uppercase tracking-wider transition-colors duration-300 ${isScrolled ? 'text-gray-500' : 'text-gray-300'}`}>
                   เติมเกมเสร็จเร็ว

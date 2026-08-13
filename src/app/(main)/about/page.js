@@ -37,7 +37,7 @@ export default function AboutSection() {
               <div className="absolute inset-0 animate-pulse rounded-3xl bg-gradient-to-tr from-cyan-500/30 to-purple-500/30 blur-2xl" />
               <div className="relative rounded-3xl border border-cyan-500/30 bg-slate-900/60 p-3 backdrop-blur-md shadow-[0_0_50px_rgba(34,211,238,0.25)]">
                 <Image
-                  src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=900"
+                  src="https://i.pinimg.com/236x/50/4b/f2/504bf215c77261547d43515a85caa63c.jpg"
                   alt="ทีมงานเติมเกม"
                   width={900}
                   height={600}

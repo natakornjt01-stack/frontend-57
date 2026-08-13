@@ -190,7 +190,10 @@ export default function LoginModal({ isOpen, onClose }) {
                   : "bg-gradient-to-tr from-emerald-500 via-teal-600 to-cyan-500 shadow-[0_0_25px_rgba(16,185,129,0.5)]"
               }`}
             >
-              G
+              <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H9v2H7v-2H5v-2h2V9h2v2h2v2zm4.5 1c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+    </svg>
+  
             </div>
             <h2 className="text-2xl font-extrabold tracking-tight text-white mt-4">
               {isLoginMode ? "ยินดีต้อนรับกลับมา" : "สร้างบัญชีใหม่"}

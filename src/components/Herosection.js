@@ -43,17 +43,28 @@ export default function HeroSection() {
             </div>
           </div>
 
+         
           <div className="flex justify-center">
-            <div className="relative">
-              <div className="absolute inset-0 animate-pulse rounded-full bg-cyan-500/20 blur-3xl" />
+            <div className="relative group">
+              
+              <div className="absolute -inset-4 animate-pulse rounded-[2.5rem] bg-gradient-to-r from-cyan-500/30 via-purple-500/30 to-pink-500/30 blur-2xl opacity-75 group-hover:opacity-100 transition-opacity duration-500" />
 
-              <Image
-                src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=900"
-                alt="Gaming"
-                width={900}
-                height={600}
-                className="relative w-full max-w-lg rounded-3xl border border-cyan-500/30 shadow-[0_0_50px_rgba(34,211,238,0.4)]"
-              />
+              
+              <div className="relative w-full max-w-lg overflow-hidden rounded-3xl p-[2px] transition-transform duration-500 hover:scale-[1.02]">
+                {/* ไฟ LED หมุนวนรอบกรอบ */}
+                <div className="absolute -inset-[200%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_0deg,#06b6d4,#3b82f6,#a855f7,#ec4899,#06b6d4)] opacity-100" />
+
+             
+                <div className="relative h-full w-full overflow-hidden rounded-[22px] bg-slate-950">
+                  <Image
+                    src="https://zzz.honeyhunterworld.com/img/item/55002-item_full_icon.webp"
+                    alt="Gaming"
+                    width={2000}
+                    height={6000}
+                    className="w-full h-auto object-cover rounded-[22px] shadow-[0_0_50px_rgba(34,211,238,0.3)] transition-all duration-300 group-hover:shadow-[0_0_70px_rgba(168,85,247,0.5)]"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
