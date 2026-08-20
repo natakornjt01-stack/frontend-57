@@ -73,7 +73,7 @@ export default function UsersPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 px-4 pb-12 pt-24 md:px-8 md:pt-32 text-white">
-      {/* Dynamic Keyframes for Grid LED Animations */}
+      {/* Keyframe แสงไฟ LED */}
       <style jsx global>{`
         @keyframes led-flow-horizontal {
           0% { transform: translateX(-100%); }
@@ -102,26 +102,26 @@ export default function UsersPage() {
           </span>
         </div>
 
-        {/* Desktop Table (ตารางไฟ LED วิ่งตามเส้น Grid) */}
+        {/* Desktop Table (แก้ไขการจัดคอลัมน์และตารางไฟ LED ให้ตรงเป๊ะ) */}
         <div className="hidden md:block">
           <div className="relative overflow-hidden rounded-3xl p-[2px] shadow-[0_0_30px_rgba(0,0,0,0.9)]">
-            {/* ไฟ LED วิ่งรอบขอบตารางนอกสุด */}
+            {/* ไฟ LED วิ่งรอบขอบนอก */}
             <div className="absolute -inset-[200%] animate-[spin_6s_linear_infinite] bg-[conic-gradient(from_0deg,#06b6d4,#3b82f6,#a855f7,#ec4899,#06b6d4)] opacity-80" />
 
             <div className="relative overflow-hidden rounded-[22px] bg-slate-900/95 backdrop-blur-xl">
-              <table className="w-full text-left border-collapse">
+              {/* ใช้ w-full เพื่อยืดเต็ม และล็อกสัดส่วนคอลัมน์ */}
+              <table className="w-full text-left border-collapse table-fixed">
                 <thead>
-                  <tr className="border-b border-cyan-500/30 bg-slate-950/90 text-cyan-400 text-sm font-extrabold uppercase tracking-wider relative">
-                    <th className="p-4 text-center border-r border-slate-800">ลำดับ</th>
-                    <th className="p-4 border-r border-slate-800">ชื่อ</th>
-                    <th className="p-4 border-r border-slate-800">นามสกุล</th>
-                    <th className="p-4 border-r border-slate-800">Username</th>
-                    <th className="p-4 text-center">จัดการ</th>
+                  <tr className="border-b border-cyan-500/30 bg-slate-950/90 text-cyan-400 text-sm font-extrabold uppercase tracking-wider">
+                    <th className="w-[10%] p-4 text-center border-r border-slate-800">ลำดับ</th>
+                    <th className="w-[20%] p-4 text-left border-r border-slate-800">ชื่อ</th>
+                    <th className="w-[20%] p-4 text-left border-r border-slate-800">นามสกุล</th>
+                    <th className="w-[30%] p-4 text-left border-r border-slate-800">USERNAME</th>
+                    <th className="w-[20%] p-4 text-center">จัดการ</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/80 text-sm font-medium">
                   {users.map((user, index) => {
-                    // กำหนดความเร็วและการหน่วงเวลาของไฟ LED สำหรับแต่ละแถวให้มีความสุ่มเป็นธรรมชาติ
                     const duration = `${(index % 3) * 1.2 + 2.5}s`;
                     const delay = `${(index % 5) * 0.4}s`;
 
@@ -130,66 +130,61 @@ export default function UsersPage() {
                         key={user.id || index}
                         className="group transition-colors duration-300 hover:bg-slate-800/50 relative"
                       >
-                        {/* ==================== 1. เส้นไฟ LED วิ่งแนวนอน (ด้านบนของแถว) ==================== */}
-                        <td colSpan={5} className="p-0 border-none absolute top-0 inset-x-0 h-[1px] pointer-events-none overflow-hidden z-10">
-                          <div
-                            className="w-full h-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-led-h opacity-60 group-hover:opacity-100 group-hover:via-fuchsia-400 transition-opacity"
-                            style={{
-                              "--led-duration": duration,
-                              animationDelay: delay,
-                            }}
-                          />
-                        </td>
-
-                        {/* ==================== เซลล์ที่ 1: ลำดับ ==================== */}
-                        <td className="p-4 text-center text-slate-400 border-r border-slate-800 relative overflow-hidden">
+                        {/* 1. ลำดับ */}
+                        <td className="p-4 text-center text-slate-400 border-r border-slate-800 relative">
+                          {/* เส้นไฟ LED แนวนอนวิ่งบนขอบแถว */}
+                          <div className="absolute top-0 inset-x-0 h-[1px] overflow-hidden pointer-events-none">
+                            <div
+                              className="w-full h-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-led-h opacity-40 group-hover:opacity-100 transition-opacity"
+                              style={{ "--led-duration": duration, animationDelay: delay }}
+                            />
+                          </div>
                           {/* เส้นไฟ LED แนวตั้งฝั่งขวา */}
                           <div className="absolute top-0 right-0 w-[1px] h-full overflow-hidden pointer-events-none">
                             <div
-                              className="w-full h-full bg-gradient-to-b from-transparent via-cyan-400 to-transparent animate-led-v opacity-40 group-hover:opacity-90"
+                              className="w-full h-full bg-gradient-to-b from-transparent via-cyan-400 to-transparent animate-led-v opacity-30 group-hover:opacity-80"
                               style={{ "--led-duration": `${parseFloat(duration) + 1}s`, animationDelay: delay }}
                             />
                           </div>
                           {index + 1}
                         </td>
 
-                        {/* ==================== เซลล์ที่ 2: ชื่อ ==================== */}
-                        <td className="p-4 text-slate-200 border-r border-slate-800 relative overflow-hidden">
+                        {/* 2. ชื่อ */}
+                        <td className="p-4 text-left text-slate-200 border-r border-slate-800 relative truncate">
                           <div className="absolute top-0 right-0 w-[1px] h-full overflow-hidden pointer-events-none">
                             <div
-                              className="w-full h-full bg-gradient-to-b from-transparent via-fuchsia-400 to-transparent animate-led-v opacity-30 group-hover:opacity-80"
+                              className="w-full h-full bg-gradient-to-b from-transparent via-fuchsia-400 to-transparent animate-led-v opacity-25 group-hover:opacity-80"
                               style={{ "--led-duration": `${parseFloat(duration) + 0.5}s`, animationDelay: `${index * 0.2}s` }}
                             />
                           </div>
                           {user.firstname}
                         </td>
 
-                        {/* ==================== เซลล์ที่ 3: นามสกุล ==================== */}
-                        <td className="p-4 text-slate-200 border-r border-slate-800 relative overflow-hidden">
+                        {/* 3. นามสกุล */}
+                        <td className="p-4 text-left text-slate-200 border-r border-slate-800 relative truncate">
                           <div className="absolute top-0 right-0 w-[1px] h-full overflow-hidden pointer-events-none">
                             <div
-                              className="w-full h-full bg-gradient-to-b from-transparent via-purple-400 to-transparent animate-led-v opacity-30 group-hover:opacity-80"
+                              className="w-full h-full bg-gradient-to-b from-transparent via-purple-400 to-transparent animate-led-v opacity-25 group-hover:opacity-80"
                               style={{ "--led-duration": `${parseFloat(duration) + 0.8}s`, animationDelay: `${index * 0.3}s` }}
                             />
                           </div>
                           {user.lastname}
                         </td>
 
-                        {/* ==================== เซลล์ที่ 4: Username ==================== */}
-                        <td className="p-4 text-cyan-300 font-mono border-r border-slate-800 relative overflow-hidden">
+                        {/* 4. Username */}
+                        <td className="p-4 text-left text-cyan-300 font-mono border-r border-slate-800 relative truncate">
                           <div className="absolute top-0 right-0 w-[1px] h-full overflow-hidden pointer-events-none">
                             <div
-                              className="w-full h-full bg-gradient-to-b from-transparent via-cyan-400 to-transparent animate-led-v opacity-40 group-hover:opacity-90"
+                              className="w-full h-full bg-gradient-to-b from-transparent via-cyan-400 to-transparent animate-led-v opacity-30 group-hover:opacity-80"
                               style={{ "--led-duration": duration, animationDelay: delay }}
                             />
                           </div>
                           {user.username}
                         </td>
 
-                        {/* ==================== เซลล์ที่ 5: ปุ่มจัดการ ==================== */}
+                        {/* 5. จัดการ */}
                         <td className="p-4 text-center">
                           <div className="flex items-center justify-center gap-3">
-                            {/* ปุ่ม แก้ไข (เขียวนีออน + ไฟ LED ขาว-ฟ้า) */}
                             <div className="relative overflow-hidden rounded-xl p-[2px] transition-transform duration-300 hover:scale-105 active:scale-95">
                               <div className="absolute -inset-[200%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,#ffffff,#38bdf8,#06b6d4,#ffffff)] opacity-90" />
                               <button
@@ -200,7 +195,6 @@ export default function UsersPage() {
                               </button>
                             </div>
 
-                            {/* ปุ่ม ลบ (แดงสว่าง + ไฟ LED ขาว-แดง) */}
                             <div className="relative overflow-hidden rounded-xl p-[2px] transition-transform duration-300 hover:scale-105 active:scale-95">
                               <div className="absolute -inset-[200%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,#ffffff,#ef4444,#dc2626,#ffffff)] opacity-90" />
                               <button
@@ -221,7 +215,7 @@ export default function UsersPage() {
           </div>
         </div>
 
-        {/* Mobile Responsive Grid Cards */}
+        {/* Mobile Cards */}
         <div className="grid grid-cols-1 gap-4 md:hidden">
           {users.map((user, index) => (
             <div
