@@ -1,17 +1,24 @@
 "use client";
+
+
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import {useRouter} from "next/navigation";
+
 
 const API_URL = "https://api.itdev.cmtc.ac.th/users";
 
 export default function UsersPage() {
+  const router = useRouter();
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [deletingId, setDeletingId] = useState(null); //กำหนดค่า state
 
   useEffect(() => {
     fetchUsers();
   }, []);
+
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -39,9 +46,102 @@ export default function UsersPage() {
     console.log("Edit user:", id);
   };
 
-  const handleDelete = (id) => {
-    console.log("Delete user:", id);
-  };
+  const handleDelete = async (id) => {
+  // หาข้อมูลคนนั้นจาก state เพื่อเอาชื่อไปแสดงในกล่องยืนยัน
+  const user = users.find((u) => u.id === id);
+  const result = await Swal.fire({
+    icon: "warning",
+    title: "ยืนยันการลบข้อมูล",
+    html: user
+      ? `ต้องการลบ <b>${user.firstname} ${user.lastname}</b> ใช่หรือไม่?<br>เมื่อลบแล้วจะไม่สามารถกู้คืนได้`
+      : "เมื่อลบแล้วจะไม่สามารถกู้คืนได้",
+    showCancelButton: true,
+    confirmButtonText: "ลบเลย",
+    cancelButtonText: "ยกเลิก",
+    confirmButtonColor: "#dc2626",
+    cancelButtonColor: "#6b7280",
+    reverseButtons: true,
+  });
+
+  const handleDelete = async (id) => {
+  // หาข้อมูลคนนั้นจาก state เพื่อเอาชื่อไปแสดงในกล่องยืนยัน
+  const user = users.find((u) => u.id === id);
+  const result = await Swal.fire({
+    icon: "warning",
+    title: "ยืนยันการลบข้อมูล",
+    html: user
+      ? `ต้องการลบ <b>${user.firstname} ${user.lastname}</b> ใช่หรือไม่?<br>เมื่อลบแล้วจะไม่สามารถกู้คืนได้`
+      : "เมื่อลบแล้วจะไม่สามารถกู้คืนได้",
+    showCancelButton: true,
+    confirmButtonText: "ลบเลย",
+    cancelButtonText: "ยกเลิก",
+    confirmButtonColor: "#dc2626",
+    cancelButtonColor: "#6b7280",
+    reverseButtons: true,
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    setDeletingId(id);
+
+    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.message || `Status ${response.status}`);
+    }
+
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+
+    await Swal.fire({
+      icon: "success",
+      title: "ลบข้อมูลเรียบร้อยแล้ว",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+  } catch (error) {
+    await Swal.fire({
+      icon: "error",
+      title: "ลบข้อมูลไม่สำเร็จ",
+      text: error.message,
+    });
+  } finally {
+    setDeletingId(null);
+  }
+};
+
+  if (!result.isConfirmed) return;
+
+  try {
+    setDeletingId(id);
+
+    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.message || `Status ${response.status}`);
+    }
+
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+
+    await Swal.fire({
+      icon: "success",
+      title: "ลบข้อมูลเรียบร้อยแล้ว",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+  } catch (error) {
+    await Swal.fire({
+      icon: "error",
+      title: "ลบข้อมูลไม่สำเร็จ",
+      text: error.message,
+    });
+  } finally {
+    setDeletingId(null);
+  }
+};
+
 
   if (isLoading)
     return (
@@ -188,7 +288,7 @@ export default function UsersPage() {
                             <div className="relative overflow-hidden rounded-xl p-[2px] transition-transform duration-300 hover:scale-105 active:scale-95">
                               <div className="absolute -inset-[200%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,#ffffff,#38bdf8,#06b6d4,#ffffff)] opacity-90" />
                               <button
-                                onClick={() => handleEdit(user.id)}
+                                onClick={() => router.push(`/users/edit/${user.id}`)}
                                 className="relative rounded-[10px] bg-slate-950 px-4 py-2 text-xs font-black text-emerald-400 transition-all duration-300 shadow-[0_0_15px_rgba(52,211,153,0.4)] hover:shadow-[0_0_25px_rgba(52,211,153,0.8)] hover:bg-emerald-500 hover:text-slate-950"
                               >
                                 แก้ไข
@@ -242,7 +342,7 @@ export default function UsersPage() {
                   <div className="relative overflow-hidden rounded-xl p-[2px]">
                     <div className="absolute -inset-[200%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,#ffffff,#38bdf8,#06b6d4,#ffffff)] opacity-90" />
                     <button
-                      onClick={() => handleEdit(user.id)}
+                      onClick={() => router.push(`/users/edit/${user.id}`)}
                       className="relative rounded-[10px] bg-slate-950 px-4 py-2 text-xs font-black text-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]"
                     >
                       แก้ไข
@@ -252,11 +352,12 @@ export default function UsersPage() {
                   <div className="relative overflow-hidden rounded-xl p-[2px]">
                     <div className="absolute -inset-[200%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,#ffffff,#ef4444,#dc2626,#ffffff)] opacity-90" />
                     <button
-                      onClick={() => handleDelete(user.id)}
-                      className="relative rounded-[10px] bg-slate-950 px-4 py-2 text-xs font-black text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"
-                    >
-                      ลบ
-                    </button>
+                  onClick={() => handleDelete(user.id)}
+                  disabled={deletingId === user.id}
+                  className="px-3 py-1 bg-red-500 text-white rounded text-sm"
+                >
+                  {deletingId === user.id ? "กำลังลบ..." : "ลบ"}
+                </button>
                   </div>
                 </div>
               </div>
