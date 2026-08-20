@@ -1,10 +1,8 @@
 "use client";
 
-
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import {useRouter} from "next/navigation";
-
+import { useRouter } from "next/navigation";
 
 const API_URL = "https://api.itdev.cmtc.ac.th/users";
 
@@ -13,12 +11,18 @@ export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [deletingId, setDeletingId] = useState(null); //กำหนดค่า state
+  const [deletingId, setDeletingId] = useState(null);
+  const [isAuth, setIsAuth] = useState(false);  //กำหนด state เช็ค login
 
-  useEffect(() => {
+    useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+    setIsAuth(true);
     fetchUsers();
   }, []);
-
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -36,114 +40,81 @@ export default function UsersPage() {
         background: "#0f172a",
         color: "#fff",
         confirmButtonColor: "#06b6d4",
+        customClass: {
+          popup: "border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.3)] rounded-2xl",
+        },
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleEdit = (id) => {
-    console.log("Edit user:", id);
+  const handleDelete = async (id) => {
+    // หาข้อมูลคนนั้นจาก state เพื่อเอาชื่อไปแสดงในกล่องยืนยัน
+    const user = users.find((u) => u.id === id);
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "ยืนยันการลบข้อมูล",
+      html: user
+        ? `ต้องการลบ <b class="text-cyan-400">${user.firstname} ${user.lastname}</b> ใช่หรือไม่?<br><span class="text-xs text-slate-400">เมื่อลบแล้วจะไม่สามารถกู้คืนได้</span>`
+        : "เมื่อลบแล้วจะไม่สามารถกู้คืนได้",
+      showCancelButton: true,
+      confirmButtonText: "ลบเลย",
+      cancelButtonText: "ยกเลิก",
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#334155",
+      background: "#0f172a",
+      color: "#fff",
+      reverseButtons: true,
+      customClass: {
+        popup: "border border-red-500/30 shadow-[0_0_25px_rgba(239,68,68,0.3)] rounded-2xl",
+      },
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      setDeletingId(id);
+
+      const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || `Status ${response.status}`);
+      }
+
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+
+      await Swal.fire({
+        icon: "success",
+        title: "ลบข้อมูลเรียบร้อยแล้ว",
+        timer: 1500,
+        showConfirmButton: false,
+        background: "#0f172a",
+        color: "#fff",
+        customClass: {
+          popup: "border border-emerald-500/30 shadow-[0_0_25px_rgba(16,185,129,0.3)] rounded-2xl",
+        },
+      });
+    } catch (error) {
+      await Swal.fire({
+        icon: "error",
+        title: "ลบข้อมูลไม่สำเร็จ",
+        text: error.message,
+        background: "#0f172a",
+        color: "#fff",
+        confirmButtonColor: "#ef4444",
+        customClass: {
+          popup: "border border-red-500/30 shadow-[0_0_25px_rgba(239,68,68,0.3)] rounded-2xl",
+        },
+      });
+    } finally {
+      setDeletingId(null);
+    }
   };
 
-  const handleDelete = async (id) => {
-  // หาข้อมูลคนนั้นจาก state เพื่อเอาชื่อไปแสดงในกล่องยืนยัน
-  const user = users.find((u) => u.id === id);
-  const result = await Swal.fire({
-    icon: "warning",
-    title: "ยืนยันการลบข้อมูล",
-    html: user
-      ? `ต้องการลบ <b>${user.firstname} ${user.lastname}</b> ใช่หรือไม่?<br>เมื่อลบแล้วจะไม่สามารถกู้คืนได้`
-      : "เมื่อลบแล้วจะไม่สามารถกู้คืนได้",
-    showCancelButton: true,
-    confirmButtonText: "ลบเลย",
-    cancelButtonText: "ยกเลิก",
-    confirmButtonColor: "#dc2626",
-    cancelButtonColor: "#6b7280",
-    reverseButtons: true,
-  });
-
-  const handleDelete = async (id) => {
-  // หาข้อมูลคนนั้นจาก state เพื่อเอาชื่อไปแสดงในกล่องยืนยัน
-  const user = users.find((u) => u.id === id);
-  const result = await Swal.fire({
-    icon: "warning",
-    title: "ยืนยันการลบข้อมูล",
-    html: user
-      ? `ต้องการลบ <b>${user.firstname} ${user.lastname}</b> ใช่หรือไม่?<br>เมื่อลบแล้วจะไม่สามารถกู้คืนได้`
-      : "เมื่อลบแล้วจะไม่สามารถกู้คืนได้",
-    showCancelButton: true,
-    confirmButtonText: "ลบเลย",
-    cancelButtonText: "ยกเลิก",
-    confirmButtonColor: "#dc2626",
-    cancelButtonColor: "#6b7280",
-    reverseButtons: true,
-  });
-
-  if (!result.isConfirmed) return;
-
-  try {
-    setDeletingId(id);
-
-    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      throw new Error(data.message || `Status ${response.status}`);
-    }
-
-    setUsers((prev) => prev.filter((u) => u.id !== id));
-
-    await Swal.fire({
-      icon: "success",
-      title: "ลบข้อมูลเรียบร้อยแล้ว",
-      timer: 1500,
-      showConfirmButton: false,
-    });
-  } catch (error) {
-    await Swal.fire({
-      icon: "error",
-      title: "ลบข้อมูลไม่สำเร็จ",
-      text: error.message,
-    });
-  } finally {
-    setDeletingId(null);
-  }
-};
-
-  if (!result.isConfirmed) return;
-
-  try {
-    setDeletingId(id);
-
-    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      throw new Error(data.message || `Status ${response.status}`);
-    }
-
-    setUsers((prev) => prev.filter((u) => u.id !== id));
-
-    await Swal.fire({
-      icon: "success",
-      title: "ลบข้อมูลเรียบร้อยแล้ว",
-      timer: 1500,
-      showConfirmButton: false,
-    });
-  } catch (error) {
-    await Swal.fire({
-      icon: "error",
-      title: "ลบข้อมูลไม่สำเร็จ",
-      text: error.message,
-    });
-  } finally {
-    setDeletingId(null);
-  }
-};
-
-
   if (isLoading)
+    if (!isAuth) return null;  //เช้คค่า login
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 pt-24 md:pt-32 pb-12">
         <div className="flex items-center gap-3 rounded-2xl bg-slate-900/80 px-6 py-4 border border-cyan-500/30 shadow-[0_0_20px_rgba(34,211,238,0.2)]">
@@ -202,14 +173,13 @@ export default function UsersPage() {
           </span>
         </div>
 
-        {/* Desktop Table (แก้ไขการจัดคอลัมน์และตารางไฟ LED ให้ตรงเป๊ะ) */}
+        {/* Desktop Table */}
         <div className="hidden md:block">
           <div className="relative overflow-hidden rounded-3xl p-[2px] shadow-[0_0_30px_rgba(0,0,0,0.9)]">
             {/* ไฟ LED วิ่งรอบขอบนอก */}
             <div className="absolute -inset-[200%] animate-[spin_6s_linear_infinite] bg-[conic-gradient(from_0deg,#06b6d4,#3b82f6,#a855f7,#ec4899,#06b6d4)] opacity-80" />
 
             <div className="relative overflow-hidden rounded-[22px] bg-slate-900/95 backdrop-blur-xl">
-              {/* ใช้ w-full เพื่อยืดเต็ม และล็อกสัดส่วนคอลัมน์ */}
               <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="border-b border-cyan-500/30 bg-slate-950/90 text-cyan-400 text-sm font-extrabold uppercase tracking-wider">
@@ -232,14 +202,12 @@ export default function UsersPage() {
                       >
                         {/* 1. ลำดับ */}
                         <td className="p-4 text-center text-slate-400 border-r border-slate-800 relative">
-                          {/* เส้นไฟ LED แนวนอนวิ่งบนขอบแถว */}
                           <div className="absolute top-0 inset-x-0 h-[1px] overflow-hidden pointer-events-none">
                             <div
                               className="w-full h-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-led-h opacity-40 group-hover:opacity-100 transition-opacity"
                               style={{ "--led-duration": duration, animationDelay: delay }}
                             />
                           </div>
-                          {/* เส้นไฟ LED แนวตั้งฝั่งขวา */}
                           <div className="absolute top-0 right-0 w-[1px] h-full overflow-hidden pointer-events-none">
                             <div
                               className="w-full h-full bg-gradient-to-b from-transparent via-cyan-400 to-transparent animate-led-v opacity-30 group-hover:opacity-80"
@@ -299,9 +267,10 @@ export default function UsersPage() {
                               <div className="absolute -inset-[200%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,#ffffff,#ef4444,#dc2626,#ffffff)] opacity-90" />
                               <button
                                 onClick={() => handleDelete(user.id)}
-                                className="relative rounded-[10px] bg-slate-950 px-4 py-2 text-xs font-black text-red-500 transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.5)] hover:shadow-[0_0_25px_rgba(239,68,68,0.9)] hover:bg-red-600 hover:text-white"
+                                disabled={deletingId === user.id}
+                                className="relative rounded-[10px] bg-slate-950 px-4 py-2 text-xs font-black text-red-500 transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.5)] hover:shadow-[0_0_25px_rgba(239,68,68,0.9)] hover:bg-red-600 hover:text-white disabled:opacity-50"
                               >
-                                ลบ
+                                {deletingId === user.id ? "กำลังลบ..." : "ลบ"}
                               </button>
                             </div>
                           </div>
@@ -352,12 +321,12 @@ export default function UsersPage() {
                   <div className="relative overflow-hidden rounded-xl p-[2px]">
                     <div className="absolute -inset-[200%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,#ffffff,#ef4444,#dc2626,#ffffff)] opacity-90" />
                     <button
-                  onClick={() => handleDelete(user.id)}
-                  disabled={deletingId === user.id}
-                  className="px-3 py-1 bg-red-500 text-white rounded text-sm"
-                >
-                  {deletingId === user.id ? "กำลังลบ..." : "ลบ"}
-                </button>
+                      onClick={() => handleDelete(user.id)}
+                      disabled={deletingId === user.id}
+                      className="relative rounded-[10px] bg-slate-950 px-4 py-2 text-xs font-black text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)] active:bg-red-600 active:text-white disabled:opacity-50"
+                    >
+                      {deletingId === user.id ? "กำลังลบ..." : "ลบ"}
+                    </button>
                   </div>
                 </div>
               </div>
